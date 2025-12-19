@@ -66,7 +66,6 @@ def summarize_dataset(
         missing_share = float(missing / n_rows) if n_rows > 0 else 0.0
         unique = int(s.nunique(dropna=True))
 
-        # Примерные значения выводим как строки
         examples = (
             s.dropna().astype(str).unique()[:example_values_per_column].tolist()
             if non_null > 0
@@ -98,11 +97,11 @@ def summarize_dataset(
                 unique=unique,
                 example_values=examples,
                 is_numeric=is_numeric,
+                zeros=zeros,
                 min=min_val,
                 max=max_val,
                 mean=mean_val,
                 std=std_val,
-                zeros=zeros
             )
         )
 
@@ -190,45 +189,56 @@ def compute_quality_flags(summary: DatasetSummary, missing_df: pd.DataFrame) -> 
     flags["max_missing_share"] = max_missing_share
     flags["too_many_missing"] = max_missing_share > 0.5
 
-    const_cols = [
-        col.name 
-        for col in summary.columns 
-        if col.unique <= 1 and col.non_null > 0
-    ]
-    flags["constant_columns"] = bool(const_cols)
-    flags["const_cols"] = const_cols
+    constant_columns = []
+    for col in summary.columns:
+        if col.unique <= 1 and col.non_null > 0:  
+            constant_columns.append(col.name)
+    flags["has_constant_columns"] = len(constant_columns) > 0
+    flags["constant_columns"] = constant_columns
+    
+    high_cardinality_categoricals = []
+    for col in summary.columns:
+        if not col.is_numeric and col.unique > 0:  
+            cardinality_ratio = col.unique / summary.n_rows if summary.n_rows > 0 else 0
+            if cardinality_ratio > 0.5:  
+                high_cardinality_categoricals.append(col.name)
+    flags["high_cardinality_categoricals"] = high_cardinality_categoricals
+    
 
-    null_cols = [
-        col.name
-        for col in summary.columns
-        if col.is_numeric and col.non_null > 0 and (col.zeros / col.non_null) > 0.5
-    ]
+    many_zero_columns = []
+    for col in summary.columns:
+        if col.is_numeric and col.non_null > 0:  
+            zero_ratio = col.zeros / col.non_null if col.non_null > 0 else 0
+            if zero_ratio > 0.8:  
+                many_zero_columns.append(col.name)
+    
+    flags["has_many_zero_values"] = len(many_zero_columns) > 0
+    flags["many_zero_columns"] = many_zero_columns
+    
+  
+    suspicious_id_duplicates = []
+    for col in summary.columns:
+        if 'id' in col.name.lower() and col.is_numeric: 
+            if col.unique < summary.n_rows: 
+                suspicious_id_duplicates.append(col.name)
+    
+    flags["has_suspicious_id_duplicates"] = len(suspicious_id_duplicates) > 0
+    flags["suspicious_id_columns"] = suspicious_id_duplicates
 
-    flags["many_null"] = bool(null_cols)
-    flags["null_cols"] = null_cols
-
-    double_id = [
-        col.name 
-        for col in summary.columns 
-        if 'id' in col.name.lower() 
-        and col.is_numeric 
-        and col.unique < summary.n_rows
-    ]
-
-    flags["strange_duplicates_id"] = bool(double_id)
-    flags["double_id"] = double_id
 
     score = 1.0
-    score -= max_missing_share  # чем больше пропусков, тем хуже
+    score -= max_missing_share 
     if summary.n_rows < 100:
         score -= 0.2
     if summary.n_cols > 100:
         score -= 0.1
-    if flags["constant_columns"]:
+    
+
+    if flags["has_constant_columns"]:
         score -= 0.1
-    if flags["many_null"]:
+    if flags["has_many_zero_values"]:
         score -= 0.1
-    if flags["strange_duplicates_id"]:
+    if flags["has_suspicious_id_duplicates"]:
         score -= 0.1
 
     score = max(0.0, min(1.0, score))
@@ -252,11 +262,11 @@ def flatten_summary_for_print(summary: DatasetSummary) -> pd.DataFrame:
                 "missing_share": col.missing_share,
                 "unique": col.unique,
                 "is_numeric": col.is_numeric,
+                "zeros": col.zeros,
                 "min": col.min,
                 "max": col.max,
                 "mean": col.mean,
                 "std": col.std,
-                "zeros": col.zeros,
             }
         )
     return pd.DataFrame(rows)

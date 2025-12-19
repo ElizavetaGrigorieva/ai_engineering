@@ -60,35 +60,40 @@ def test_correlation_and_top_categories():
     assert "value" in city_table.columns
     assert len(city_table) <= 2
 
-def const_cols_test():
-    df__const = pd.DataFrame({
-        "age": [20, 30, 40, 50],
+
+def test_quality_flags_new_features():
+
+    df_with_constant = pd.DataFrame({
+        "age": [10, 20, 30, 40],
         "height": [140, 150, 160, 170],
         "city": ["A", "B", "C", "D"],
-        "constant_col": [4, 4, 4, 4], 
-        "user_id": [1, 2, 2, 3]  
+        "constant_col": [4, 4, 4, 4],  
+        "user_id": [1, 2, 2, 3] 
     })
     
-    summary = summarize_dataset(df__const)
-    missing_df = missing_table(df__const)
+    summary = summarize_dataset(df_with_constant)
+    missing_df = missing_table(df_with_constant)
     flags = compute_quality_flags(summary, missing_df)
     
-    assert flags["constant_columns"] is True
-    assert "constant_col" in flags["const_cols"]
+    assert flags["has_constant_columns"] is True
+    assert "constant_col" in flags["constant_columns"]
     
-    assert flags["strange_duplicates_id"] is True
-    assert "user_id" in flags["double_id"]
+    assert flags["has_suspicious_id_duplicates"] is True
+    assert "user_id" in flags["suspicious_id_columns"]
 
 
-def many_null_test():
-    df_many_null = pd.DataFrame({
-        "usual_col": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-        "null_col": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0] 
+def test_quality_flags_many_zeros():
+    df_with_many_zeros = pd.DataFrame({
+        "normal_col": [1, 2, 3, 4, 5],
+        "zeros_col": [0, 0, 0, 0, 0]  
     })
     
-    summary = summarize_dataset(df_many_null)
-    missing_df = missing_table(df_many_null)
+    summary = summarize_dataset(df_with_many_zeros)
+    missing_df = missing_table(df_with_many_zeros)
     flags = compute_quality_flags(summary, missing_df)
     
-    assert flags["many_null"] is True
-    assert "zeros_col" in flags["null_cols"]
+    assert flags["has_many_zero_values"] is True
+    assert "zeros_col" in flags["many_zero_columns"]
+
+
+
