@@ -154,6 +154,80 @@ def report(
     plot_missing_matrix(df, out_root / "missing_matrix.png")
     plot_correlation_heatmap(df, out_root / "correlation_heatmap.png")
 
+    # 6. JSON-сводка (опционально)
+    if json_summary:
+        import json
+        # Создаём компактную сводку
+        json_summary_data = {
+            "n_rows": summary.n_rows,
+            "n_cols": summary.n_cols,
+            "quality_score": quality_flags["quality_score"],
+            "problematic_columns": []
+        }
+        
+        # Добавляем информацию о проблемных колонках
+        if quality_flags["too_many_missing"]:
+            for col in summary.columns:
+                if col.missing_share > 0.5:
+                    json_summary_data["problematic_columns"].append({
+                        "name": col.name,
+                        "issue": "too_many_missing",
+                        "missing_share": col.missing_share
+                    })
+        
+        if quality_flags["has_constant_columns"]:
+            for col_name in quality_flags["constant_columns"]:
+                json_summary_data["problematic_columns"].append({
+                    "name": col_name,
+                    "issue": "constant_column",
+                    "unique_values": 1
+                })
+        
+        if quality_flags["has_high_cardinality_categoricals"]:
+            for col_name in quality_flags["high_cardinality_categoricals"]:
+                col = next(c for c in summary.columns if c.name == col_name)
+                cardinality_ratio = col.unique / summary.n_rows if summary.n_rows > 0 else 0
+                json_summary_data["problematic_columns"].append({
+                    "name": col_name,
+                    "issue": "high_cardinality",
+                    "cardinality_ratio": cardinality_ratio,
+                    "unique_count": col.unique
+                })
+        
+        if quality_flags["has_many_zero_values"]:
+            for col_name in quality_flags["many_zero_columns"]:
+                col = next(c for c in summary.columns if c.name == col_name)
+                zero_ratio = col.zeros / col.non_null if col.non_null > 0 else 0
+                json_summary_data["problematic_columns"].append({
+                    "name": col_name,
+                    "issue": "many_zero_values",
+                    "zero_ratio": zero_ratio,
+                    "zero_count": col.zeros
+                })
+        
+        if quality_flags["has_suspicious_id_duplicates"]:
+            for col_name in quality_flags["suspicious_id_columns"]:
+                col = next(c for c in summary.columns if c.name == col_name)
+                json_summary_data["problematic_columns"].append({
+                    "name": col_name,
+                    "issue": "suspicious_id_duplicates",
+                    "unique_count": col.unique
+                })
+        
+        # Сохраняем JSON-сводку
+        json_path = out_root / "summary.json"
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(json_summary_data, f, indent=2, ensure_ascii=False)
+        
+        typer.echo(f"- JSON-сводка: {json_path}")
+
+    typer.echo(f"Отчёт сгенерирован в каталоге: {out_root}")
+    typer.echo(f"- Основной markdown: {md_path}")
+    typer.echo("- Табличные файлы: summary.csv, missing.csv, correlation.csv, top_categories/*.csv")
+    typer.echo("- Графики: hist_*.png, missing_matrix.png, correlation_heatmap.png")
+    if json_summary:
+        typer.echo("- JSON-файл: summary.json")
+
 
 if __name__ == "__main__":
     app()
