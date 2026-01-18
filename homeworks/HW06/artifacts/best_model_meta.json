@@ -1,0 +1,9 @@
+{
+  "model_name": "Gradient Boosting",
+  "model_type": "<class 'sklearn.ensemble._gb.GradientBoostingClassifier'>",
+  "test_metrics": {
+    "accuracy": 0.9304166666666667,
+    "f1": 0.8900592495062541,
+    "roc_auc": 0.9689864658981259
+  }
+}
