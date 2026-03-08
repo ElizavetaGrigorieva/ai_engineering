@@ -1,0 +1,25 @@
+{
+  "model_architecture": {
+    "input_dim": 784,
+    "hidden_dims": [
+      256,
+      128
+    ],
+    "num_classes": 47,
+    "activation": "relu",
+    "dropout_p": 0.0,
+    "use_batchnorm": true
+  },
+  "training_params": {
+    "optimizer": "Adam",
+    "lr": 0.001,
+    "criterion": "CrossEntropyLoss",
+    "batch_size": 128,
+    "early_stopping": {
+      "patience": 5,
+      "min_delta": 0.0005
+    }
+  },
+  "dataset": "EMNIST_balanced",
+  "seed": 42
+}
