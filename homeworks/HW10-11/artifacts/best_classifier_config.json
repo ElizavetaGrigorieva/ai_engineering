@@ -1,0 +1,12 @@
+{
+  "dataset": "STL10",
+  "model_architecture": "ResNet18",
+  "transforms": "resnet_transforms_with_augmentation",
+  "hyperparameters": {
+    "learning_rate": 0.001,
+    "batch_size": 64,
+    "epochs": 10,
+    "weight_decay": 0.0001
+  },
+  "seed": 42
+}
