@@ -1,0 +1,5 @@
+query,before_retrieved_sources,after_retrieved_sources,changed
+What are the symptoms of COVID?,"faq_018_c01,faq_021_c01,faq_021_c02,faq_019_c01,faq_023_c02","faq_031_c01,faq_018_c01,faq_021_c01,faq_021_c02,faq_032_c01",True
+How long is the incubation period?,"faq_022_c02,faq_005_c02,faq_020_c03,faq_020_c02,faq_015_c01","faq_033_c01,faq_022_c02,faq_005_c02,faq_032_c01,faq_020_c03",True
+How does the virus spread?,"faq_003_c01,faq_004_c02,faq_007_c02,faq_011_c03,faq_003_c03","faq_003_c01,faq_004_c02,faq_007_c02,faq_011_c03,faq_003_c03",False
+Recovery time from COVID-19?,"faq_018_c01,faq_011_c01,faq_023_c02,faq_004_c01,faq_017_c01","faq_032_c01,faq_033_c01,faq_031_c01,faq_018_c01,faq_011_c01",True

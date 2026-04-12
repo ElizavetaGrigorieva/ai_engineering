@@ -1,0 +1,7 @@
+{
+  "hit_at_5": 0.9,
+  "recall_at_5": 0.9,
+  "mrr_at_5": 0.7666666666666667,
+  "num_queries": 10,
+  "backend": "ST: paraphrase-multilingual-MiniLM-L12-v2"
+}

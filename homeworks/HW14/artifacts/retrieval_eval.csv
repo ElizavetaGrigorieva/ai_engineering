@@ -1,0 +1,11 @@
+query_id,query,expected_source,retrieved_sources,hit_at_k,recall_at_k,rank_of_first_relevant
+q01,How does the coronavirus spread between people?,faq_003,"faq_007_c02,faq_003_c01,faq_002_c03,faq_007_c01,faq_014_c03",1,1.0,2
+q02,Can I get COVID-19 from food or drinking water?,faq_004,"faq_004_c01,faq_004_c03,faq_004_c04,faq_011_c01,faq_018_c01",1,1.0,1
+q03,What is community spread?,faq_006,"faq_003_c03,faq_006_c01,faq_003_c02,faq_006_c02,faq_003_c01",1,1.0,2
+q04,What type of mask should I wear in public?,faq_009,"faq_022_c01,faq_009_c05,faq_009_c03,faq_009_c01,faq_009_c04",1,1.0,2
+q05,How to wash hands properly to prevent COVID?,faq_015,"faq_015_c01,faq_020_c03,faq_010_c05,faq_016_c01,faq_025_c03",1,1.0,1
+q06,Are children at higher risk of COVID-19?,faq_019,"faq_019_c01,faq_027_c02,faq_023_c02,faq_020_c04,faq_021_c01",1,1.0,1
+q07,Should children wear masks?,faq_021,"faq_022_c01,faq_022_c02,faq_009_c05,faq_009_c03,faq_009_c01",0,0.0,6
+q08,What is MIS-C in children?,faq_024,"faq_024_c02,faq_019_c02,faq_024_c03,faq_024_c01,faq_021_c03",1,1.0,1
+q09,Can mosquitoes transmit the coronavirus?,faq_007,"faq_007_c01,faq_007_c02,faq_011_c01,faq_002_c03,faq_005_c02",1,1.0,1
+q10,Is it safe to donate blood during the pandemic?,faq_012,"faq_012_c01,faq_012_c02,faq_012_c03,faq_009_c04,faq_017_c01",1,1.0,1
